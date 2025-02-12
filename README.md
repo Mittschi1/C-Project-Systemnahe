@@ -129,8 +129,6 @@ Feel free to submit issues, fork the repository, and create pull requests for an
 ## License
 
 This project is licensed under the MIT License - see the LICENSE file for details.
-# C-Project-Systemnahe-Programmierung git init git add README.md
-# C-Project-Systemnahe
-# C-Project-Systemnahe
+
 # C-Project-Systemnahe
 # C-Project-Systemnahe
