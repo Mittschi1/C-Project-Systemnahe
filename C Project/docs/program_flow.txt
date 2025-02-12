@@ -1,0 +1,148 @@
+BudgetWC Program Flow Documentation
+================================
+
+This document explains in detail how budgetWC processes files in both single-file and multi-file scenarios.
+
+Single File Processing
+--------------------
+
+When budgetWC is called with a single file (e.g., `budgetWC file.txt`), here's what happens:
+
+1. Program Initialization:
+   a. Parse command line arguments
+      - Set default display options (lines, words, bytes)
+      - Process any provided options (-l, -w, -c, -m)
+   b. Initialize data structures
+      - Create empty linked list for results
+      - Initialize mutex for thread-safe operations
+      - Create thread pool with worker threads
+
+2. Thread Pool Setup:
+   a. Initialize thread pool components
+      - Create worker threads (NUM_THREADS)
+      - Initialize mutex for work queue
+      - Initialize condition variable for signaling
+      - Set initial work count to 0
+
+3. File Processing:
+   a. Create work item containing:
+      - Filename
+      - Pointers to linked list head and current
+      - Mutex for list operations
+      - Display flags (show_lines, show_words, etc.)
+   b. Add work item to thread pool queue
+   c. Worker thread picks up the work:
+      - Opens the file
+      - Creates a new CountNode
+      - Counts file contents:
+        * Lines (newline characters)
+        * Words (space-separated sequences)
+        * Bytes (total bytes read)
+        * ASCII characters (0-127 range)
+      - Updates linked list with results
+      - Prints results immediately
+
+4. Cleanup:
+   a. Destroy thread pool
+      - Set shutdown flag
+      - Wake up all worker threads
+      - Wait for threads to finish
+      - Clean up thread pool resources
+   b. Free linked list memory
+   c. Destroy mutex
+   d. Exit program
+
+Multiple File Processing
+----------------------
+
+When budgetWC is called with multiple files (e.g., `budgetWC file1.txt file2.txt file3.txt`), the process is similar but with important differences:
+
+1. Program Initialization:
+   (Same as single file case)
+
+2. Thread Pool Setup:
+   (Same as single file case)
+
+3. Parallel File Processing:
+   a. For each input file:
+      - Create work item with file info
+      - Add to thread pool queue
+   b. Worker threads process files concurrently:
+      - Multiple threads pick up work items
+      - Each thread:
+        * Opens its assigned file
+        * Creates a new CountNode
+        * Counts file contents
+        * Safely updates shared linked list:
+          - Locks mutex
+          - Adds node to list
+          - Prints individual file results
+          - Unlocks mutex
+
+4. Total Calculation:
+   a. After all files processed:
+      - Check if more than one file was processed
+      - If yes:
+        * Lock mutex
+        * Calculate totals across all files:
+          - Sum all line counts
+          - Sum all word counts
+          - Sum all byte counts
+          - Sum all character counts
+        * Print total line with "total" label
+        * Unlock mutex
+
+5. Cleanup:
+   a. Destroy thread pool
+   b. Destroy mutex
+   c. Free entire linked list:
+      - Traverse list
+      - Free each node's filename
+      - Free each node
+   d. Exit program
+
+Key Differences in Multi-File Processing
+-------------------------------------
+
+1. Parallel Processing:
+   - Single file: Only one worker thread actively processes
+   - Multiple files: Multiple threads work simultaneously
+
+2. Resource Management:
+   - Single file: Simpler linked list management
+   - Multiple files: Requires careful synchronization of shared list
+
+3. Memory Usage:
+   - Single file: One CountNode in memory
+   - Multiple files: Multiple CountNodes stored simultaneously
+
+4. Result Display:
+   - Single file: Only individual result shown
+   - Multiple files: Individual results plus final total
+
+5. Performance:
+   - Single file: No parallel processing benefit
+   - Multiple files: Benefits from parallel processing, especially with many files
+
+Thread Safety Measures
+--------------------
+
+1. Work Queue Protection:
+   - Mutex guards work queue access
+   - Condition variable manages thread waiting
+   - Atomic work count updates
+
+2. Linked List Protection:
+   - Mutex ensures exclusive access during updates
+   - Prevents race conditions in node addition
+   - Protects during total calculation
+
+3. File Operations:
+   - Each thread operates on different files
+   - No file-level synchronization needed
+   - Results stored in thread-local variables until list update
+
+4. Output Coordination:
+   - Mutex ensures atomic prints
+   - Prevents interleaved output from different threads
+   - Maintains readable output format
