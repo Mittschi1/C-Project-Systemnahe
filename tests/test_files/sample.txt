@@ -1,0 +1,6 @@
+This is a sample text file
+for testing our word count program.
+It has multiple lines
+and various words to count.
+Some lines are short.
+Others are a bit longer with more words to process.
