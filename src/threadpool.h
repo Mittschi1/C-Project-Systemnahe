@@ -10,7 +10,7 @@
 #define MAX_THREADS 4
 #define MAX_QUEUE 100
 
-// Structure to hold the work item
+// Struct to hold data for thread pool
 typedef struct {
     const char* filename;
     CountNode** head;
@@ -22,7 +22,7 @@ typedef struct {
     bool show_chars;
 } WorkItem;
 
-// Thread pool structure
+// Thread pool struct for managing threads and queue
 typedef struct {
     pthread_t threads[MAX_THREADS];
     WorkItem queue[MAX_QUEUE];
@@ -35,28 +35,13 @@ typedef struct {
     bool stop;
 } ThreadPool;
 
-/**
- * Initialize the thread pool
- * 
- * @param pool Pointer to ThreadPool structure
- * @return 0 on success, -1 on error
- */
+
 int threadpool_init(ThreadPool* pool);
 
-/**
- * Add a work item to the thread pool queue
- * 
- * @param pool Pointer to ThreadPool structure
- * @param item Work item to add
- * @return 0 on success, -1 on error
- */
+
 int threadpool_add_work(ThreadPool* pool, WorkItem item);
 
-/**
- * Destroy the thread pool and clean up resources
- * 
- * @param pool Pointer to ThreadPool structure
- */
+
 void threadpool_destroy(ThreadPool* pool);
 
-#endif // THREADPOOL_H
+#endif 
