@@ -1,22 +1,21 @@
-# budgetWC - Multi-threaded Word Count Utility
+# wordcount-thws - Multi-threaded Word Count
 
-budgetWC is a high-performance, multi-threaded implementation of the classic word count utility. It can process multiple files in parallel and count lines, words, bytes, and ASCII characters.
+wordcount-thws is a multi-threaded implementation of the Unix wc command made for a student project. It can process multiple files in parallel and count lines, words, bytes, and ASCII characters.
 
 ## Features
 
-- Multi-threaded file processing for improved performance
 - Count lines, words, bytes, and ASCII characters
-- Process multiple files in parallel
 - Configurable output options
-- Thread-safe operations
+- Process multiple files
+- Multi-threaded file processing
+- Piping on stdin and stdout
 
 ## Prerequisites
 
-To build and run budgetWC, you need:
+To build and run wordcount-thws, you need:
 
-- GCC compiler (version 4.8 or later)
-- POSIX-compliant operating system (Linux, Unix)
-- pthread library
+- GCC compiler 
+- Linux operating system
 - make utility
 
 ## Building the Program
@@ -28,13 +27,13 @@ To build and run budgetWC, you need:
 ```bash
 make
 ```
+or:
 
-This will create the `budgetWC` executable in the project directory.
-
-To build with debug information:
 ```bash
-make debug
+make all
 ```
+
+This will create the `wordcount-thws` executable in the project directory. 
 
 To run tests:
 ```bash
@@ -50,7 +49,7 @@ make clean
 
 Basic usage:
 ```bash
-./budgetWC [OPTION]... [FILE]...
+./wordcount-thws [OPTION]... [FILE]...
 ```
 
 ### Options
@@ -61,34 +60,38 @@ Basic usage:
 - `-m, --chars`: Print character count
 - `--help`: Display help message
 
-If no options are specified, budgetWC displays line, word, and byte counts.
-If no file is specified, budgetWC reads from standard input.
+If no options are specified, wordcount-thws displays line, word, and byte counts.
+If no file is specified, wordcount-thws reads from standard input.
 
 ### Examples
 
 Count lines, words, and bytes in a single file:
 ```bash
-./budgetWC file.txt
+./wordcount-thws file.txt
 ```
 
 Count only lines in multiple files:
 ```bash
-./budgetWC -l file1.txt file2.txt file3.txt
+./wordcount-thws -l file1.txt file2.txt file3.txt
 ```
 
 Count words and characters in files:
 ```bash
-./budgetWC -w -m *.txt
+./wordcount-thws -w -m *.txt
 ```
 
 Read from standard input:
 ```bash
-echo "Hello, World!" | ./budgetWC
+echo "Hello, World!" | ./wordcount-thws
+```
+Write to standard output:
+```bash
+./wordcount-thws file.txt > output.txt
 ```
 
 ## Output Format
 
-For each file, budgetWC displays counts in the following order (if selected):
+For each file, wordcount-thws displays counts in the following order (if selected):
 1. Line count
 2. Word count
 3. Byte count
@@ -104,28 +107,14 @@ Example output:
    8    30   300 total
 ```
 
-## Performance
-
-The program uses a thread pool to process multiple files concurrently. The number of worker threads is defined in `threadpool.h` and can be adjusted based on your system's capabilities.
-
-Default configuration:
-- Number of worker threads: 4
-- Maximum work queue size: 100
-
 ## Error Handling
 
-budgetWC handles various error conditions:
+wordcount-thws handles various error conditions:
 - File not found
 - Permission denied
 - Memory allocation failures
 - Invalid options
 
-Error messages are printed to stderr with appropriate exit codes.
+Error messages are printed to stderr.
 
-## Contributing
 
-Feel free to submit issues, fork the repository, and create pull requests for any improvements.
-
-## License
-
-This project is licensed under the MIT License - see the LICENSE file for details.
